@@ -4,9 +4,10 @@
   tasks:
     
     - name: Install PyMySQL module
-      pip:
-        name: PyMySQL
+      apt:
+        name: python3-pymysql
         state: present
+        update_cache: yes  # パッケージリストを更新
 
     - name: Check if MySQL user 'studio' exists
       mysql_user:
@@ -20,9 +21,9 @@
       register: studio_user_exists
       ignore_errors: yes
 
-    - name: End playbook if MySQL user 'studio' exists
-      meta: end_play
-      when: studio_user_exists.changed == false
+    # - name: End playbook if MySQL user 'studio' exists
+    #   meta: end_play
+    #   when: studio_user_exists.changed == false
 
     - name: Install MySQL server
       apt:

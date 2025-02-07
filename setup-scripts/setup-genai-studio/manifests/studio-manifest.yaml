@@ -328,7 +328,7 @@ spec:
         - name: REGISTRY
           value: ${REGISTRY}
         - name: TAG
-          value: ${TAG}
+          value: "${TAG}"
         - name: SBX_HTTP_PROXY
           value: ${HTTP_PROXY}
         - name: SBX_NO_PROXY
@@ -393,21 +393,21 @@ spec:
         securityContext: {}
         image: ${REGISTRY}/studio-frontend:${TAG}
         imagePullPolicy: Always
-        env:
-        - name: DATABASE_TYPE
-          value: mysql
-        - name: DATABASE_HOST
-          value: ${MYSQL_HOST}
-        - name: DATABASE_PORT
-          value: "3306"
-        - name: DATABASE_USER
-          value: studio
-        - name: DATABASE_PASSWORD
-          value: studio
-        - name: DATABASE_NAME
-          value: studio
-        - name: DATABASE_SSL
-          value: "true"
+        # env:
+        # - name: DATABASE_TYPE
+        #   value: mysql
+        # - name: DATABASE_HOST
+        #   value: ${MYSQL_HOST}
+        # - name: DATABASE_PORT
+        #   value: "3306"
+        # - name: DATABASE_USER
+        #   value: studio
+        # - name: DATABASE_PASSWORD
+        #   value: studio
+        # - name: DATABASE_NAME
+        #   value: studio
+        # - name: DATABASE_SSL
+        #   value: "true"
         ports:
         - name: studio-frontend
           containerPort: 8080
