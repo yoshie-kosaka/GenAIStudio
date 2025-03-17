@@ -45,6 +45,8 @@
 
     - name: Secure MySQL installation updating root password
       mysql_user:
+        login_user: root
+        login_password: root
         name: root
         host: localhost
         password: root
