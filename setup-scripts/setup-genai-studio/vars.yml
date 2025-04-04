@@ -1,5 +1,7 @@
 container_registry: 'opea'
-container_tag: 'latest'
+container_tag: '1.2'
 http_proxy: ''
 no_proxy: ''
 mysql_host: 'Your_External_Host_IP'
+docker_username: 'container registory username'
+docker_password: 'container registory password'

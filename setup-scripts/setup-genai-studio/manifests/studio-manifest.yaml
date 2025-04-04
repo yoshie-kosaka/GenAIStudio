@@ -318,7 +318,7 @@ spec:
     spec:
       containers:
       - name: studio-backend
-        image: ${REGISTRY}/studio-backend:${TAG}
+        image: <private container registory>/studio-backend:<tag>
         imagePullPolicy: Always
         env:
         - name: APP_FRONTEND_IMAGE
@@ -328,7 +328,7 @@ spec:
         - name: REGISTRY
           value: ${REGISTRY}
         - name: TAG
-          value: ${TAG}
+          value: "${TAG}"
         - name: SBX_HTTP_PROXY
           value: ${HTTP_PROXY}
         - name: SBX_NO_PROXY
@@ -354,6 +354,8 @@ spec:
           timeoutSeconds: 10
           failureThreshold: 3
       serviceAccountName: studio-backend-sa
+      imagePullSecrets:
+      - name: docker-secret
 ---
 apiVersion: v1
 kind: Service
@@ -391,23 +393,23 @@ spec:
       containers:
       - name: studio-frontend
         securityContext: {}
-        image: ${REGISTRY}/studio-frontend:${TAG}
+        image: <private container registory>/studio-frontend:<tag>
         imagePullPolicy: Always
         env:
-        - name: DATABASE_TYPE
-          value: mysql
-        - name: DATABASE_HOST
-          value: ${MYSQL_HOST}
-        - name: DATABASE_PORT
-          value: "3306"
-        - name: DATABASE_USER
-          value: studio
-        - name: DATABASE_PASSWORD
-          value: studio
-        - name: DATABASE_NAME
-          value: studio
-        - name: DATABASE_SSL
-          value: "true"
+        # - name: DATABASE_TYPE
+        #   value: mysql
+        # - name: DATABASE_HOST
+        #   value: ${MYSQL_HOST}
+        # - name: DATABASE_PORT
+        #   value: "3306"
+        # - name: DATABASE_USER
+        #   value: studio
+        # - name: DATABASE_PASSWORD
+        #   value: studio
+        # - name: DATABASE_NAME
+        #   value: studio
+        # - name: DATABASE_SSL
+        #   value: "true"
         ports:
         - name: studio-frontend
           containerPort: 8080
@@ -425,6 +427,8 @@ spec:
       - name: mysql-tls
         secret:
           secretName: mysql-tls
+      imagePullSecrets:
+      - name: docker-secret
 ---
 apiVersion: apps/v1
 kind: Deployment

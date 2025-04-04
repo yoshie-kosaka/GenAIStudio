@@ -8,6 +8,7 @@ kind: ConfigMap
 metadata:
   name: config-{endpoint}
 data:
+  LLM_MODEL_ID: "{tgi_modelName}"
   HEALTHCHECK_ENDPOINT: "{tgi_endpoint}"
   LLM_ENDPOINT: "http://{tgi_endpoint}"
   HUGGINGFACEHUB_API_TOKEN: "{tgi_huggingFaceToken}"

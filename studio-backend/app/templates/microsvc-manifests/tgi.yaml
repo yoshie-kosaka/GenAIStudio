@@ -11,13 +11,14 @@ data:
   MODEL_ID: "{modelName}"
   PORT: "{port}"
   HF_TOKEN: "{huggingFaceToken}"
-  http_proxy: "${HTTP_PROXY}"
   https_proxy: "${HTTP_PROXY}"
   no_proxy: "${NO_PROXY}"
   HABANA_LOGS: "/tmp/habana_logs"
   NUMBA_CACHE_DIR: "/tmp"
   HF_HOME: "/tmp/.cache/huggingface"
   CUDA_GRAPHS: "0"
+  OLLAMA_DEBUG: "1"
+  OLLAMA_KEEP_ALIVE: "-1"
 ---
 # Source: tgi/templates/service.yaml
 # Copyright (C) 2024 Intel Corporation
@@ -31,7 +32,7 @@ spec:
   type: ClusterIP
   ports:
     - port: 80
-      targetPort: "{port}"
+      targetPort: "11434"
       protocol: TCP
       name: "{endpoint}"
   selector:
@@ -47,7 +48,11 @@ metadata:
   name: "{endpoint}"
   labels:
     app: "{endpoint}"
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/instance: ollama
+    app.kubernetes.io/version: "0.5.13"
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: "{endpoint}"
@@ -56,63 +61,41 @@ spec:
       labels:
         app: "{endpoint}"
     spec:
-      securityContext:
-        {}
       containers:
         - name: tgi
           envFrom:
             - configMapRef:
                 name: config-{endpoint}
-          securityContext:
-            {}
-          image: "ghcr.io/huggingface/text-generation-inference:sha-e4201f4-intel-cpu"
+          image: "ollama/ollama:0.5.13"
           imagePullPolicy: IfNotPresent
-          volumeMounts:
-            - mountPath: /data
-              name: model-volume
-            - mountPath: /dev/shm
-              name: shm
-            - mountPath: /tmp
-              name: tmp
           ports:
             - name: http
-              containerPort: "{port}"
+              containerPort: 11434
               protocol: TCP
-          livenessProbe:
-            failureThreshold: 24
-            initialDelaySeconds: 8
-            periodSeconds: 8
-            timeoutSeconds: 4
-            tcpSocket:
-              port: http
-          readinessProbe:
-            initialDelaySeconds: 16
-            periodSeconds: 8
-            timeoutSeconds: 4
-            tcpSocket:
-              port: http
-          startupProbe:
-            failureThreshold: 180
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 2
-            tcpSocket:
-              port: http
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    while ! /bin/ollama ps > /dev/null 2>&1; do
+                      sleep 5
+                    done
+                    # Pull models at container startup
+                    echo $MODEL_ID | xargs -n1 /bin/ollama pull || echo "Failed to pull model: $MODEL_ID"
+                    # Run models at container startup
+                    echo $MODEL_ID | xargs -n1 /bin/ollama run || echo "Failed to run model: $MODEL_ID"
           resources:
-            {}
+            requests:
+              memory: "16Gi"
+              cpu: "2000m"
+            limits:
+              memory: "64Gi"
+              cpu: "8000m"
+          volumeMounts:
+            - name: ollama-data
+              mountPath: "/root/.ollama"
       volumes:
-        - name: model-volume
-          persistentVolumeClaim:
-            claimName: model-pvc
-        # - name: model-volume
-        #   hostPath:
-        #     path: /mnt/opea-models
-        #     type: Directory
-        - name: shm
-          emptyDir:
-            medium: Memory
-            sizeLimit: 1Gi
-        - name: tmp
+        - name: ollama-data
           emptyDir: {}
-      # extra time to finish processing buffered requests before pod is forcibly terminated
-      terminationGracePeriodSeconds: 120

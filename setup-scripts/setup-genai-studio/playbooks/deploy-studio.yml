@@ -19,6 +19,18 @@
       ignore_errors: yes
       changed_when: false
 
+    - name: Delete existing docker-registry secret if it exists
+      command: >
+        kubectl -n studio delete secret docker-secret
+      ignore_errors: yes
+
+    - name: Create docker-registry secret in Kubernetes
+      command: >
+        kubectl -n studio create secret docker-registry docker-secret
+        --docker-server=<private container registory>
+        --docker-username={{ docker_username }}
+        --docker-password={{ docker_password }}
+
     - name: Update manifest if coredns is available
       shell: sed -i 's/kube-dns/coredns/g' ../manifests/studio-manifest.yaml
       when: coredns_check.stdout != ''
@@ -77,7 +89,7 @@
         MYSQL_HOST: "{{ mysql_host }}"
 
     - name: Wait for all pods to be ready in studio namespace
-      shell: kubectl wait --for=condition=ready pod --all --namespace=studio --timeout=300s
+      shell: kubectl wait --for=condition=ready pod --all --namespace=studio --timeout=900s
       register: pod_ready_check
       failed_when: pod_ready_check.rc != 0
       changed_when: false
