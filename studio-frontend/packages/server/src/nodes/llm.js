@@ -21,7 +21,7 @@ class OPEA_LLM_TGi {
         this.dependent_services = {
             'tgi': {
                 'modelName': '',
-                'huggingFaceToken': 'NA'
+                'huggingFaceToken': 'XXXXXXXXXXXXXXXXXXXXXXXXX'
             }
         }
         this.inputs = [
@@ -33,41 +33,57 @@ class OPEA_LLM_TGi {
             {
                 label: 'Model Name',
                 name: 'modelName',
-                type: 'options',
-                default: 'Intel/neural-chat-7b-v3-3',
+                type: 'options', // 'options'から'string'に変更
+                default: 'phi4-mini:3.8b-q4_K_M',
                 options: [
                     {
-                        name: 'Intel/neural-chat-7b-v3-3',
-                        label: 'Intel/neural-chat-7b-v3-3'
+                        name: 'phi4-mini:3.8b',
+                        label: 'phi4-mini:3.8b'
                     },
                     {
-                        name: 'Llama-2-7b-chat-hf',
-                        label: 'Llama-2-7b-chat-hf'
+                        name: 'phi4-mini:3.8b-q4_K_M',
+                        label: 'phi4-mini:3.8b-q4_K_M'
                     },
                     {
-                        name: 'Llama-2-70b-chat-hf',
-                        label: 'Llama-2-70b-chat-hf'
+                      name: 'llama2:7b',
+                      label: 'llama2:7b'
                     },
                     {
-                        name: 'Meta-Llama-3-8B-Instruct',
-                        label: 'Meta-Llama-3-8B-Instruct'
+                        name: 'phi4:14b',
+                        label: 'phi4:14b'
                     },
                     {
-                        name: 'Meta-Llama-3-70B-Instruct',
-                        label: 'Meta-Llama-3-70B-Instruct'
+                        name: 'deepseek-r1:1.5b',
+                        label: 'deepseek-r1:1.5b'
                     },
                     {
-                        name: 'Phi-3',
-                        label: 'Phi-3'
+                        name: 'llama3.2:1b',
+                        label: 'llama3.2:1b'
+                    },
+                    {
+                        name: 'llama3.2:3b',
+                        label: 'llama3.2:3b'
+                    },
+                    {
+                        name: 'phi4:14b-q4_K_M',
+                        label: 'phi4:14b-q4_K_M'
+                    },
+                    {
+                        name: 'phi4:14b-q8_0',
+                        label: 'phi4:14b-q8_0'
+                    },
+                    {
+                        name: 'codellama:13b',
+                        label: 'codellama:13b'
                     }
                 ]
             },
-            {
-                label: 'HuggingFace Token',
-                name: 'huggingFaceToken',
-                type: 'password',
-                optional: true,
-            },
+            // {
+            //     label: 'HuggingFace Token',
+            //     name: 'huggingFaceToken',
+            //     type: 'password',
+            //     optional: true,
+            // },
             {
                 label: 'Maximum Tokens',
                 name: 'max_tokens',
